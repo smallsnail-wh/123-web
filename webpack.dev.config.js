@@ -17,7 +17,7 @@ module.exports = merge(webpackBaseConfig, {
         inline: true,
         hot: true,
         proxy:{
-            '/weiguang/*':
+            '/weiguang':
             {
                 target: 'http://localhost:8080',  
                 secure: false  

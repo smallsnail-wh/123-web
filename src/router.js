@@ -47,6 +47,22 @@ const routers = [
                     title:"welcome"
                 }
 	    	},
+            {
+                path: 'secondredpacket',
+                name: 'secondredpacket',
+                component: (resolve) => require(['./views/sys/secondredpacket.vue'], resolve),
+                meta: {
+                    title:"secondredpacket"
+                }
+            },
+            {
+                path: 'level',
+                name: 'level',
+                component: (resolve) => require(['./views/sys/level.vue'], resolve),
+                meta: {
+                    title:"level"
+                }
+            },
 	    	{
 	    		path: 'user',
                 name: 'user',

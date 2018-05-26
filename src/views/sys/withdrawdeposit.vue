@@ -1,6 +1,7 @@
 <template>
 	<div style="margin: 20px;">
-        <div>
+        <span>功能未确定</span>
+        <!-- <div>
             <Row style="margin-bottom: 25px;">
                 <Col span="8">登录名：
                 	<Input v-model="loginName" placeholder="请输入..." style="width:200px"></Input>
@@ -25,7 +26,7 @@
                     </div>  
                 </li>
             </ul>
-        </div>
+        </div> -->
         <!--添加modal-->  
         <Modal :mask-closable="false" :visible.sync="newModal" :loading = "loading" v-model="newModal" width="600" title="新建" @on-ok="newOk('userNew')" @on-cancel="cancel()">
             <Form ref="userNew" :model="userNew" :rules="ruleNew" :label-width="80" >
