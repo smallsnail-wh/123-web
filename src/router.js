@@ -71,6 +71,22 @@ const routers = [
                     title:"user"
                 }
 	    	},
+            {
+                path: 'adminuser',
+                name: 'adminuser',
+                component: (resolve) => require(['./views/sys/adminuser.vue'], resolve),
+                meta: {
+                    title:"adminuser"
+                }
+            },
+            {
+                path: 'salesmen',
+                name: 'salesmen',
+                component: (resolve) => require(['./views/sys/salesmen.vue'], resolve),
+                meta: {
+                    title:"salesmen"
+                }
+            },
 	    	{
 	    		path: 'userstatistics',
                 name: 'userstatistics',

@@ -38,38 +38,6 @@
                 </Card>
             </Col>
         </Row>
-
-        <Row style="background:#eee;padding:20px">
-            <Col span="6">
-                <Card :bordered="false">
-                    <p slot="title">月活跃率</p>
-                    <Row style="margin-bottom: 25px;">
-                        <Col span="10">
-                            <DatePicker v-model="date4" type="date" placeholder="Select date"></DatePicker>
-                        </Col>
-                        <Col span="10" offset="4">
-                            <Button type="primary" shape="circle" icon="ios-search" @click="getCount4()">搜索</Button>
-                        </Col>
-                    </Row>
-                    <h3 style="text-align:center">{{count4}}人</h3>
-                </Card>
-            </Col>
-
-            <Col span="6" offset="2">
-                <Card :bordered="false">
-                    <p slot="title">日活跃率</p>
-                    <Row style="margin-bottom: 25px;">
-                        <Col span="10">
-                            <DatePicker v-model="date5" type="date" placeholder="Select date"></DatePicker>
-                        </Col>
-                        <Col span="10" offset="4">
-                            <Button type="primary" shape="circle" icon="ios-search" @click="getCount5()">搜索</Button>
-                        </Col>
-                    </Row>
-                    <h3 style="text-align:center">{{count5}}人</h3>
-                </Card>
-            </Col>
-        </Row>
         <div style="margin: 20px;">
             <ul>
                 <li>
@@ -154,10 +122,6 @@
                 date2:null,
                 count3:0,
                 date3:null,
-                count4:0,
-                date4:null,
-                count5:0,
-                date5:null,
                 total:0,
                 /*pageInfo实体*/
                 pageInfo:{
@@ -267,7 +231,7 @@
             getTable(e) {
                 this.axios({
                   method: 'get',
-                  url: '/admin/userstatistics',
+                  url: '/admin/salesmen',
                   params: {
                     'page':e.pageInfo.page,
                     'pageSize':e.pageInfo.pageSize,
@@ -283,15 +247,14 @@
                         this.count2 = this.total;
                     }else if(e.type == 3){
                         this.count3 = this.total;
-                    }else if(e.type == 4){
-                        this.count4 = this.total;
-                    }else if(e.type == 5){
-                        this.count5 = this.total;
                     }
                 }.bind(this)).catch(function (error) {
                   alert(error);
                 });
             },
+            cancel () {
+                this.modal = false;                
+            },      
             getCount1(){
                 this.initPageInfo();
                 this.getTable({
@@ -301,7 +264,7 @@
                 });
                 /*this.axios({
                   method: 'get',
-                  url: '/users/count1'
+                  url: '/users/publishers/count1'
                 }).then(function (response) {
                     this.count1 = response.data;
                 }.bind(this)).catch(function (error) {
@@ -320,7 +283,7 @@
                     });
                     /*this.axios({
                       method: 'get',
-                      url: '/users/count2',
+                      url: '/users/publishers/count2',
                       params:{
                         "time":this.date2.getTime()
                       }
@@ -343,7 +306,7 @@
                     });
                     /*this.axios({
                       method: 'get',
-                      url: '/users/count3',
+                      url: '/users/publishers/count3',
                       params:{
                         "time":this.date3.getTime()
                       }
@@ -353,56 +316,7 @@
                       alert(error);
                     });*/
                 }
-            },
-            getCount4(){
-                if(this.date4 != null && this.date4 != ''){
-                    this.initPageInfo();
-                    this.time = this.date4.getTime();
-                    this.type = 4;
-                    this.getTable({
-                        "type":this.type,
-                        "pageInfo":this.pageInfo,
-                        "time":this.time,
-                    });
-                    /*this.axios({
-                      method: 'get',
-                      url: '/users/count4',
-                      params:{
-                        "time":this.date4.getTime()
-                      }
-                    }).then(function (response) {
-                        this.count4 = response.data;
-                    }.bind(this)).catch(function (error) {
-                      alert(error);
-                    });*/
-                }
-            },
-            getCount5(){
-                if(this.date5 != null && this.date5 != ''){
-                    this.initPageInfo();
-                    this.time = this.date5.getTime();
-                    this.type = 5;
-                    this.getTable({
-                        "type":this.type,
-                        "pageInfo":this.pageInfo,
-                        "time":this.time,
-                    });
-                    /*this.axios({
-                      method: 'get',
-                      url: '/users/count5',
-                      params:{
-                        "time":this.date5.getTime()
-                      }
-                    }).then(function (response) {
-                        this.count5 = response.data;
-                    }.bind(this)).catch(function (error) {
-                      alert(error);
-                    });*/
-                }
-            },
-            cancel () {
-                this.modal = false;                
-            },   
+            }   
         }
     }
 </script>

@@ -51,71 +51,44 @@
                         </Form-item>
                     </Col>
                 </Row>
+               
+            </Form>
+        </Modal>
+        <!--修改modal-->  
+        <Modal :mask-closable="false" :visible.sync="modifyModal" :loading = "loading" v-model="modifyModal" width="600" title="修改" @on-ok="modifyOk('userModify')" @on-cancel="cancel()">
+             <Form ref="userModify" :model="userModify" :rules="ruleModify" :label-width="80" >
                 <Row>
                     <Col span="12">
-                        <Form-item label="用户类型:" prop="customerType">
-                           <!--  <Input v-model="userNew.customerType" style="width: 204px"/> -->
-                            <Select v-model="userNew.customerType" style="width:200px">
-                                <Option v-for="item in customerTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-                            </Select>
+                        <Form-item label="登录名:" prop="loginName">
+                            <Input v-model="userModify.loginName" style="width: 204px"/>
+                        </Form-item>
+                    </Col>
+                    <Col span="12">
+                        <Form-item label="用户名:" prop="name">
+                            <Input v-model="userModify.name" style="width: 204px"/>
+                        </Form-item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="12">
+                        <Form-item label="密码:" prop="password">
+                            <Input v-model="userModify.password" type="password" style="width: 204px"/>
+                        </Form-item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="12">
+                        <Form-item label="邮箱:" prop="email">
+                            <Input v-model="userModify.email" style="width: 204px"/>
                         </Form-item>
                     </Col>
                 </Row>
             </Form>
         </Modal>
-        <Modal :mask-closable="false" :visible.sync="modal" v-model="modal" width="600" title="查看">
-            <Form :label-width="80" >
-                <Row>
-                    <Col span="12">
-                        <Form-item label="用户名:">
-                            <strong>{{userInfo.name}}</strong>
-                        </Form-item>
-                    </Col>
-                    <Col span="12">
-                        <Form-item label="账户余额:">
-                            <span>{{userInfo.money}}</span>
-                        </Form-item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span="12">
-                        <Form-item label="手机号:">
-                            <span>{{userInfo.mobile}}</span>
-                        </Form-item>
-                    </Col>
-                    <Col span="12">
-                        <Form-item label="微信:">
-                            <span>{{userInfo.weixinId}}</span>
-                        </Form-item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span="12">
-                        <Form-item label="用户等级:">
-                            <span>{{userInfo.level}}</span>
-                        </Form-item>
-                    </Col>
-                    <Col span="12">
-                        <Form-item label="邀请人数:">
-                            <span>{{userInfo.invitationNumber}}</span>
-                        </Form-item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col span="12">
-                        <Form-item label="用户类型:">
-                            <span>{{userInfo.customerType}}</span>
-                        </Form-item>
-                    </Col>
-                    <Col span="12">
-                        <Form-item label="注册时间:">
-                            <span>{{userInfo.createTime}}</span>
-                        </Form-item>
-                    </Col>
-                </Row>
-            </Form>
-            <div slot="footer">
-                <Button type="error" size="large"  @click="cancel">关闭</Button>
+        <!--配置角色modal-->  
+        <Modal v-model="roleModal" width="500" title="角色配置" @on-ok="roleOk()" @on-cancel="cancel()">
+            <div>
+                <Table border :columns="columns2" :data="data2" :height="260"  @on-selection-change="s=>{change2(s)}"></Table>
             </div>
         </Modal>
     </div>
@@ -124,17 +97,6 @@
 	export default {
         data () {
             return {
-                modal:false,
-                userInfo:{
-                    name:'',
-                    mobile:'',
-                    money:'',
-                    createTime:'',
-                    weixinId:'',
-                    invitationNumber:'',
-                    customerType:'',
-                    level:'',
-                },
                 customerTypeList:[
                     {
                         value:'0',
@@ -202,9 +164,6 @@
                     mobile: [
                         { type:'string',required: true, message: '输入手机号', trigger: 'blur' }
                     ],
-                    customerType: [
-                        { type:'string',required: true, message: '输选择用户类型', trigger: 'blur' }
-                    ],
                     password: [
                         { type:'string',required: true, message: '输入密码', trigger: 'blur' }
                     ],
@@ -246,26 +205,7 @@
                     {
                         title: '账号余额',
                         key: 'money'
-                    },
-                    {
-                        title: '操作',
-                        align: 'center',
-                        key: 'action',
-                        render: (h, params) => {
-                            return h('div', [
-                                h('Button', {
-                                    props: {
-                                        type: 'info',
-                                    },
-                                    on: {
-                                        click: () => {
-                                            this.seeUserInfo(params.row);
-                                        }
-                                    }
-                                },'查看')
-                            ]);
-                        }
-                    },
+                    }
                 ],
                 /*表数据*/
                 data1: [],
@@ -369,7 +309,7 @@
             getTable(e) {
                 this.axios({
                   method: 'get',
-                  url: '/admin/users',
+                  url: '/admin/adminusers',
                   params: {
                     'page':e.pageInfo.page,
                     'pageSize':e.pageInfo.pageSize,
@@ -413,6 +353,7 @@
                         if(this.userNew.password == this.userNew.passwordAgain){
                            /* this.initUser();*/
                             /*this.userSet(this.userNew);*/
+                            this.userNew.customerType = 3;
                             this.axios({
                                 method: 'post',
                                 url: '/admin/users/user',
@@ -511,7 +452,7 @@
                 if(this.groupId!=null && this.groupId!=""){
                     this.axios({
                       method: 'delete',
-                      url: '/admin/users',
+                      url: '/admin/adminusers',
                       data: this.groupId
                     }).then(function (response) {
                         this.getTable({
@@ -596,41 +537,7 @@
                         "roleId": e[i].id
                     });  
                 }
-            },
-            dateGet(e){
-                var time = new Date(parseInt(e));
-                return time.getFullYear()+"-"+(time.getMonth()+1)+"-"+time.getDate()+" "+time.getHours()+":"+time.getMinutes(); 
-            },
-            seeUserInfo(e){
-                this.modal = true;
-
-                this.userInfo.name = e.name;
-                if(e.mobile != null && e.mobile != ''){
-                    this.userInfo.mobile = e.mobile;
-                }else{
-                    this.userInfo.mobile = '未绑定手机';
-                }
-                this.userInfo.money = e.money;
-                this.userInfo.createTime = this.dateGet(e.createTime);
-                if(e.weixinId != null && e.weixinId != ''){
-                    this.userInfo.weixinId = '绑定了微信';
-                }else{
-                    this.userInfo.weixinId = '未绑定微信';
-                }
-                this.userInfo.level = e.level;
-
-                this.userInfo.invitationNumber = e.userDetailEntity.invitationNumber;
-                if(e.userDetailEntity.customerType == 0){
-                    this.userInfo.customerType = '普通用户';
-                }else if(e.userDetailEntity.customerType == 1){
-                    this.userInfo.customerType = '全职销售员';
-                }else if(e.userDetailEntity.customerType == 2){
-                    this.userInfo.customerType = '发布用户';
-                }else if(e.userDetailEntity.customerType == 3){
-                    this.userInfo.customerType = '系统管理员';
-                }
-                
-            },
+            }
         }
     }
 </script>
