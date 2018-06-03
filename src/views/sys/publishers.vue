@@ -13,7 +13,7 @@
                     <p slot="title">月新增</p>
                     <Row style="margin-bottom: 25px;">
                         <Col span="10">
-                            <DatePicker v-model="date2" type="date" placeholder="Select date"></DatePicker>
+                            <DatePicker v-model="date2" type="month" placeholder="Select date"></DatePicker>
                         </Col>
                         <Col span="10" offset="4">
                             <Button type="primary" shape="circle" icon="ios-search" @click="getCount2()">搜索</Button>

@@ -1,5 +1,5 @@
 <template>
-    <div style="background:#eee;height:500px">
+    <div>
         <Row style="background:#eee;padding:20px">
             <Col span="6">
                 <Card :bordered="false">
@@ -13,7 +13,7 @@
                     <p slot="title">月充值金额</p>
                     <Row style="margin-bottom: 25px;">
                         <Col span="10">
-                            <DatePicker v-model="date2" type="date" placeholder="Select date"></DatePicker>
+                            <DatePicker v-model="date2" type="month" placeholder="Select date"></DatePicker>
                         </Col>
                         <Col span="10" offset="4">
                             <Button type="primary" shape="circle" icon="ios-search" @click="getCount2()">搜索</Button>
@@ -38,6 +38,71 @@
                 </Card>
             </Col>
         </Row>
+        <div style="margin: 20px;">
+            <ul>
+                <li>
+                    <div style="padding: 10px 0;">
+                        <Table border :columns="columns1" :data="data1" :height="400" ></Table>
+                    </div> 
+                </li>
+                <li>
+                    <div style="text-align: right;">
+                        <Page :total="total" :page-size="pageInfo.pageSize" show-elevator show-total @on-change="e=>{pageSearch(e)}"></Page>
+                    </div>  
+                </li>
+            </ul>
+        </div>
+
+        <Modal :mask-closable="false" :visible.sync="modal" v-model="modal" width="600" title="查看">
+            <Form :label-width="80" >
+                <Row>
+                    <Col span="12">
+                        <Form-item label="用户名:">
+                            <strong>{{echargeInfo.username}}</strong>
+                        </Form-item>
+                    </Col>
+                    <Col span="12">
+                        <Form-item label="充值金额:">
+                            <span>{{echargeInfo.amount}}</span>
+                        </Form-item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="12">
+                        <Form-item label="手机号:">
+                            <span>{{echargeInfo.mobile}}</span>
+                        </Form-item>
+                    </Col>
+                    <Col span="12">
+                        <Form-item label="微信:">
+                            <span>{{echargeInfo.weixinid}}</span>
+                        </Form-item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="12">
+                        <Form-item label="订单号:">
+                            <span>{{echargeInfo.orderNumber}}</span>
+                        </Form-item>
+                    </Col>
+                    <Col span="12">
+                        <Form-item label="充值方式:">
+                            <span>{{echargeInfo.form}}</span>
+                        </Form-item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="12">
+                        <Form-item label="充值时间:">
+                            <span>{{echargeInfo.time}}</span>
+                        </Form-item>
+                    </Col>
+                </Row>
+            </Form>
+            <div slot="footer">
+                <Button type="error" size="large"  @click="cancel">关闭</Button>
+            </div>
+        </Modal>
     </div>
 </template>
 <script>
@@ -48,13 +113,154 @@
                 count2:0,
                 date2:null,
                 count3:0,
-                date3:null
+                date3:null,
+                modal:false,
+                type:1,
+                time:null,
+                total:0,
+                /*pageInfo实体*/
+                pageInfo:{
+                    page:0,
+                    pageSize:10
+                },
+                echargeInfo:{
+                    username:'',
+                    mobile:'',
+                    weixinid:'',
+                    orderNumber:'',
+                    amount:'',
+                    form:'',
+                    time:'',
+                },
+                /*表显示字段*/
+                columns1: [
+                    {
+                        title: '用户名',
+                        key: 'username'
+                    },
+                    {
+                        title: '手机号',
+                        key: 'mobile'
+                    },
+                    {
+                        title: '充值余额',
+                        key: 'amount'
+                    },
+                    {
+                        title: '充值方式',
+                        align: 'center',
+                        key: 'form',
+                        render: (h, params) => {
+                            if(params.row.form == 0){
+                               return h('div', [
+                                    h('strong', null,'支付宝充值')
+                                ]); 
+                           }else if(params.row.form == 1){
+                                return h('div', [
+                                    h('strong', null,'微信充值')
+                                ]); 
+                           }
+                            
+                        }
+
+                    },
+                    {
+                        title: '操作',
+                        align: 'center',
+                        key: 'action',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'info',
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.seeInfo(params.row);
+                                        }
+                                    }
+                                },'查看')
+                            ]);
+                        }
+                    },
+                ],
+                /*表数据*/
+                data1: [],
             }
         },
         mounted(){
             this.getCount1();
         },
         methods:{
+            initPageInfo(){
+                this.pageInfo.page = 0;
+                this.pageInfo.pageSize = 10;
+            },
+            /*分页点击事件*/
+            pageSearch(e){
+                this.pageInfo.page = e-1;
+                this.getTable({  
+                    "type":this.type,
+                    "pageInfo":this.pageInfo,
+                    "time":this.time,
+                });
+            },
+            dateGet(e){
+                var time = new Date(parseInt(e));
+                return time.getFullYear()+"-"+(time.getMonth()+1)+"-"+time.getDate()+" "+time.getHours()+":"+time.getMinutes(); 
+            },
+            seeInfo(e){
+                this.modal = true;
+
+                this.echargeInfo.username = e.username;
+                if(e.mobile != null && e.mobile != ''){
+                    this.echargeInfo.mobile = e.mobile;
+                }else{
+                    this.echargeInfo.mobile = '未绑定手机';
+                }
+                if(e.weixinid != null && e.weixinid != ''){
+                    this.echargeInfo.weixinid = '绑定了微信';
+                }else{
+                    this.echargeInfo.weixinid = '未绑定微信';
+                }
+                this.echargeInfo.orderNumber = e.orderNumber;
+                this.echargeInfo.amount = e.amount;
+                if(e.form == 0){
+                    this.echargeInfo.form = '支付宝充值';
+                }else if(e.form == 1){
+                    this.echargeInfo.form = '微信充值';
+                }
+                this.echargeInfo.time = this.dateGet(e.time);
+                
+            },
+            /*得到表数据*/
+            getTable(e) {
+                this.axios({
+                  method: 'get',
+                  url: '/admin/recharges',
+                  params: {
+                    'page':e.pageInfo.page,
+                    'pageSize':e.pageInfo.pageSize,
+                    'type':e.type,
+                    'time':e.time
+                  }
+                }).then(function (response) {
+                    this.data1=response.data.data;
+                    this.total=response.data.totalCount;
+                    /*if(e.type == 1){
+                        this.count1 = this.total;
+                    }else if(e.type == 2){
+                        this.count2 = this.total;
+                    }else if(e.type == 3){
+                        this.count3 = this.total;
+                    }*/
+                }.bind(this)).catch(function (error) {
+                  alert(error);
+                });
+            },
+            cancel () {
+                this.modal = false;                
+            }, 
             getCount1(){
                 this.axios({
                   method: 'get',
@@ -63,6 +269,13 @@
                     this.count1 = response.data;
                 }.bind(this)).catch(function (error) {
                   alert(error);
+                });
+
+                this.initPageInfo();
+                this.getTable({
+                    "type":this.type,
+                    "pageInfo":this.pageInfo,
+                    "time":this.time,
                 });
             },
             getCount2(){
@@ -78,6 +291,15 @@
                     }.bind(this)).catch(function (error) {
                       alert(error);
                     });
+
+                    this.initPageInfo();
+                    this.time = this.date2.getTime();
+                    this.type = 2;
+                    this.getTable({
+                        "type":this.type,
+                        "pageInfo":this.pageInfo,
+                        "time":this.time,
+                    });
                 }
             },
             getCount3(){
@@ -92,6 +314,15 @@
                         this.count3 = response.data;
                     }.bind(this)).catch(function (error) {
                       alert(error);
+                    });
+
+                    this.initPageInfo();
+                    this.time = this.date3.getTime();
+                    this.type = 3;
+                    this.getTable({
+                        "type":this.type,
+                        "pageInfo":this.pageInfo,
+                        "time":this.time,
                     });
                 }
             }  
