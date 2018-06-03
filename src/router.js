@@ -80,6 +80,14 @@ const routers = [
                 }
             },
             {
+                path: 'leavemess',
+                name: 'leavemess',
+                component: (resolve) => require(['./views/sys/leavemess.vue'], resolve),
+                meta: {
+                    title:"leavemess"
+                }
+            },
+            {
                 path: 'salesmen',
                 name: 'salesmen',
                 component: (resolve) => require(['./views/sys/salesmen.vue'], resolve),
