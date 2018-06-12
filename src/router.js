@@ -63,6 +63,38 @@ const routers = [
                     title:"level"
                 }
             },
+            {
+                path: 'userticheng',
+                name: 'userticheng',
+                component: (resolve) => require(['./views/sys/userticheng.vue'], resolve),
+                meta: {
+                    title:"userticheng"
+                }
+            },
+            {
+                path: 'salesticheng',
+                name: 'salesticheng',
+                component: (resolve) => require(['./views/sys/salesticheng.vue'], resolve),
+                meta: {
+                    title:"salesticheng"
+                }
+            },
+            {
+                path: 'banner',
+                name: 'banner',
+                component: (resolve) => require(['./views/sys/banner.vue'], resolve),
+                meta: {
+                    title:"banner"
+                }
+            },
+            {
+                path: 'publish',
+                name: 'publish',
+                component: (resolve) => require(['./views/sys/publish.vue'], resolve),
+                meta: {
+                    title:"publish"
+                }
+            },
 	    	{
 	    		path: 'user',
                 name: 'user',
