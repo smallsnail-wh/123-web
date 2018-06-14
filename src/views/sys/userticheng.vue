@@ -1,22 +1,41 @@
 <template>
-    <div align="center" style="margin: 20px;">
-        <Form label-position="left" :label-width="120" style="width: 300px">
-            <!-- <FormItem label="门槛金额：">
-                <h5>{{reachMoney}}元</h5>
-            </FormItem> -->
-            <FormItem label="提成比例：">
-                <h5>{{proportion}}%</h5>
-            </FormItem>
-            <!-- <FormItem label="活动状态：">
-                <i-switch v-model="form" size="large" @on-change="change">
-                        <span slot="open">开启</span>
-                        <span slot="close">关闭</span>
-                </i-switch>
-            </FormItem> -->
-            <FormItem>
-                <Button type="primary" @click="openModifyModal()">修改</Button>
-            </FormItem>
-        </Form>
+    <div style="margin: 20px;">
+        <div align="center" style="margin-bottom: 20px">
+            <Card :bordered="false">
+                <p slot="title">修改提成比例</p>
+                <Form label-position="left" :label-width="120" style="width: 300px;margin-bottom: 25px;">
+                    <!-- <FormItem label="门槛金额：">
+                        <h5>{{reachMoney}}元</h5>
+                    </FormItem> -->
+                    <FormItem label="提成比例：">
+                        <h5>{{proportion}}%</h5>
+                    </FormItem>
+                    <!-- <FormItem label="活动状态：">
+                        <i-switch v-model="form" size="large" @on-change="change">
+                                <span slot="open">开启</span>
+                                <span slot="close">关闭</span>
+                        </i-switch>
+                    </FormItem> -->
+                    <FormItem>
+                        <Button type="primary" @click="openModifyModal()">修改</Button>
+                    </FormItem>
+                </Form>
+            </Card>
+        </div>
+        <div>
+            <ul>
+                <li>
+                    <div style="padding: 10px 0;">
+                        <Table border :columns="columns1" :data="data1" :height="400" @on-selection-change="s=>{change(s)}"></Table>
+                    </div> 
+                </li>
+                <li>
+                    <div style="text-align: right;">
+                        <Page :total="total" :page-size="pageInfo.pageSize" show-elevator show-total @on-change="e=>{pageSearch(e)}"></Page>
+                    </div>  
+                </li>
+            </ul>
+        </div>
 
         <Modal align="center" :mask-closable="false" :visible.sync="modifyModal" :loading = "loading" v-model="modifyModal" width="350" title="修改" @on-ok="modifyOk('info')" @on-cancel="cancel()">
              <Form ref="info" :model="info" :rules="ruleModify" :label-width="80" >
@@ -60,6 +79,37 @@
                         }, trigger: 'blur'}
                     ]
                 },
+                /*分页total属性绑定值*/
+                total:0,
+                /*pageInfo实体*/
+                pageInfo:{
+                    page:0,
+                    pageSize:10
+                },
+                columns1: [
+                    {
+                        title: '用户ID',
+                        key: 'userid'
+                    },
+                    {
+                        title: '用户名',
+                        key: 'username'
+                    },
+                    {
+                        title: '手机号',
+                        key: 'mobile'
+                    },
+                    {
+                        title: '邀请人数',
+                        key: 'invitecount'
+                    },
+                    {
+                        title: '提成金额',
+                        key: 'money'
+                    }
+                ],
+                /*生产类型表数据*/
+                data1: []
             }
         },
         mounted(){
@@ -80,8 +130,34 @@
             }.bind(this)).catch(function (error) {
               alert(error);
             });
+            this.getTable({
+                "pageInfo":this.pageInfo
+            });
         },
         methods:{
+            /*分页点击事件*/
+            pageSearch(e){
+                this.pageInfo.page = e-1;
+                this.getTable({  
+                    "pageInfo":this.pageInfo
+                });
+            },
+            /*得到表数据*/
+            getTable(e) {
+                this.axios({
+                  method: 'get',
+                  url: 'admin/tichengs/liset/2',
+                  params: {
+                    'page':e.pageInfo.page,
+                    'pageSize':e.pageInfo.pageSize
+                  }
+                }).then(function (response) {
+                    this.data1=response.data.data;
+                    this.total=response.data.totalCount;
+                }.bind(this)).catch(function (error) {
+                  alert(error);
+                });
+            },
             infoSet(e){
             	this.info.id=e.id;
             	this.info.proportion=e.proportion;
