@@ -3,14 +3,14 @@
         <Row style="background:#eee;padding:20px">
             <Col span="6">
                 <Card :bordered="false">
-                    <p slot="title">总充值金额</p>
+                    <p slot="title">总收入</p>
                     <h3 style="text-align:center">{{count1}}元</h3>
                 </Card>
             </Col>
 
             <Col span="6" offset="2">
                 <Card :bordered="false">
-                    <p slot="title">月充值金额</p>
+                    <p slot="title">月收入</p>
                     <Row style="margin-bottom: 25px;">
                         <Col span="10">
                             <DatePicker v-model="date2" type="month" placeholder="Select date"></DatePicker>
@@ -25,7 +25,7 @@
 
             <Col span="6" offset="2">
                 <Card :bordered="false">
-                    <p slot="title">日充值金额</p>
+                    <p slot="title">日收入</p>
                     <Row style="margin-bottom: 25px;">
                         <Col span="10">
                             <DatePicker v-model="date3" type="date" placeholder="Select date"></DatePicker>
