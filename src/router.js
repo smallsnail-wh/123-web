@@ -245,6 +245,7 @@ const routers = [
 
 // 路由配置
 const RouterConfig = {
+    base: '/console/',
     mode: 'history',
     routes: routers
 };
