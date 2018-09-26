@@ -215,30 +215,14 @@ const routers = [
                     title:"role"
                 }
 	    	},
-	    	{
-	    		path: 'test4',
-                name: 'test4',
-                component: (resolve) => require(['./views/test/test4.vue'], resolve),
+            {
+                path: 'notification',
+                name: 'notification',
+                component: (resolve) => require(['./views/sys/system_notification.vue'], resolve),
                 meta: {
-                    title:"test4"
+                    title:"notification"
                 }
-	    	},
-	    	{
-	    		path: 'test5',
-                name: 'test5',
-                component: (resolve) => require(['./views/test/test5.vue'], resolve),
-                meta: {
-                    title:"test5"
-                }
-	    	},
-	    	{
-	    		path: 'test6',
-                name: 'test6',
-                component: (resolve) => require(['./views/test/test6.vue'], resolve),
-                meta: {
-                    title:"test6"
-                }
-	    	},
+            }
 	    ]
 	}
 ];
