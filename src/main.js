@@ -13,7 +13,7 @@ import './js/swiper.js'
 
 import './css/style.css'
 import './css/swiper.css'*/
-
+// import './styles/common.css';
 Vue.use(VueAxios,axios);
 
 Vue.use(iView);

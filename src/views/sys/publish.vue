@@ -15,11 +15,18 @@
                     <Col span="6"><Button type="primary" shape="circle" icon="ios-search" @click="search()">搜索</Button></Col>
                 </Row>
             </div>
+            <div style="margin-bottom: 20px;">
+                查询已下架：
+                <i-switch v-model="flag" @on-change="switchChange()">
+                    <span slot="open">开</span>
+                    <span slot="close">关</span>
+                </i-switch>
+            </div>
             <ul>
-                <li>
+                <li v-if="!flag">
                     <Button type="success" icon="wrench" @click="modify()">置顶</Button>
                     <Button type="error" icon="trash-a" @click="cancelModify()">取消置顶</Button>
-                    <Button type="error" icon="trash-a" @click="del()">删除</Button>
+                    <Button type="warning" icon="ios-close" @click="del()">下架</Button>
                 </li>
                 <li>
                     <div style="padding: 10px 0;">
@@ -102,6 +109,7 @@
     export default {
         data () {
             return {
+                flag:false,
                 count:null,
                 groupId:null,
                 username:null,
@@ -155,7 +163,23 @@
                     {
                         title: '红包金额',
                         key: 'money',
-                        width: 100
+                        width: 100,
+                        render: (h, params) => {
+                            if(params.row.money < 0.01){
+                               return h('div', [
+                                    h('span', {
+                                        
+                                    },'0')
+                                ]); 
+                           }else{
+                                return h('div', [
+                                    h('span', {
+                                        
+                                    },params.row.money)
+                                ]); 
+                           }
+                            
+                        }
                     },
                     {
                         title: '剩余红包',
@@ -215,8 +239,10 @@
         },
         mounted(){
             this.getTable({
-                "type":this.type,
-                "pageInfo":this.pageInfo
+                "pageInfo":this.pageInfo,
+                "username":this.username,
+                "mobile":this.mobile,
+                "advid":this.advid
             });
         },
         methods:{
@@ -228,9 +254,10 @@
             pageSearch(e){
                 this.pageInfo.page = e-1;
                 this.getTable({  
-                    "type":this.type,
                     "pageInfo":this.pageInfo,
-                    "time":this.time,
+                    "username":this.username,
+                    "mobile":this.mobile,
+                    "advid":this.advid
                 });
             },
             dateGet(e){
@@ -266,24 +293,46 @@
             },
             /*得到表数据*/
             getTable(e) {
-                this.axios({
-                  method: 'get',
-                  url: '/admin/publish/advs',
-                  params: {
-                    'page':e.pageInfo.page,
-                    'pageSize':e.pageInfo.pageSize,
-                    'username':e.username,
-                    'mobile':e.mobile,
-                    'advid':e.advid
-                    
-                  }
-                }).then(function (response) {
-                    this.data1=response.data.data;
-                    this.total=response.data.totalCount;
-                    this.groupId = null;
-                }.bind(this)).catch(function (error) {
-                  alert(error);
-                });
+                if(!this.flag){
+                    this.axios({
+                      method: 'get',
+                      url: '/admin/publish/advs',
+                      params: {
+                        'page':e.pageInfo.page,
+                        'pageSize':e.pageInfo.pageSize,
+                        'username':e.username,
+                        'mobile':e.mobile,
+                        'advid':e.advid
+                        
+                      }
+                    }).then(function (response) {
+                        this.data1=response.data.data;
+                        this.total=response.data.totalCount;
+                        this.groupId = null;
+                    }.bind(this)).catch(function (error) {
+                      alert(error);
+                    });
+                }else{
+                    this.axios({
+                      method: 'get',
+                      url: '/admin/uppublish/advs',
+                      params: {
+                        'page':e.pageInfo.page,
+                        'pageSize':e.pageInfo.pageSize,
+                        'username':e.username,
+                        'mobile':e.mobile,
+                        'advid':e.advid
+                        
+                      }
+                    }).then(function (response) {
+                        this.data1=response.data.data;
+                        this.total=response.data.totalCount;
+                        this.groupId = null;
+                    }.bind(this)).catch(function (error) {
+                      alert(error);
+                    });
+                }
+                
             },
             /*搜索按钮点击事件*/
             search(){
@@ -390,6 +439,14 @@
                         alert(error);
                     });
                 }
+            },
+            switchChange(){
+                this.getTable({
+                    "pageInfo":this.pageInfo,
+                    "username":this.username,
+                    "mobile":this.mobile,
+                    "advid":this.advid
+            });
             },
         }
     }

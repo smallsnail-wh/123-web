@@ -104,8 +104,16 @@
                         key: 'invitecount'
                     },
                     {
+                        title: '充值总金额',
+                        key: 'rechargeMoney'
+                    },
+                    {
+                        title: '消费总金额',
+                        key: 'spentMoney'
+                    },
+                    {
                         title: '提成金额',
-                        key: 'money'
+                        key: 'tichengMoney'
                     }
                 ],
                 /*生产类型表数据*/

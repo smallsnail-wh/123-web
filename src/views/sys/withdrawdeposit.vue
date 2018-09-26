@@ -206,7 +206,10 @@
                     "mobile": e.mobile
                   }
                 }).then(function (response) {
-                    console.log(response.data);
+                    this.getTable({
+                        "pageInfo":this.pageInfo
+                    });
+                    this.$Message.info('提现成功');
                 }.bind(this)).catch(function (error) {
                   alert(error);
                 });
