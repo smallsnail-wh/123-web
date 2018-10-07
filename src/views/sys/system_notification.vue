@@ -113,7 +113,7 @@
             getTable(e) {
                 this.axios({
                   method: 'get',
-                  url: '/admin/notifiction',
+                  url: '/notifiction',
                   params: {
                     'page':e.pageInfo.page,
                     'pageSize':e.pageInfo.pageSize

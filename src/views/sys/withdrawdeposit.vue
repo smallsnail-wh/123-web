@@ -105,8 +105,8 @@
                         key: 'username'
                     },
                     {
-                        title: '手机号',
-                        key: 'mobile'
+                        title: '提现账号',
+                        key: 'account'
                     },
                     {
                         title: '提现金额',
@@ -196,23 +196,30 @@
 
             },
             transfer(e){
-                this.axios({
-                  method: 'post',
-                  url: '/admin/alipay/transfer',
-                  data:{
-                    "id": e.id,
-                    "userid": e.userid,
-                    "amount": e.amount,
-                    "mobile": e.mobile
-                  }
-                }).then(function (response) {
-                    this.getTable({
-                        "pageInfo":this.pageInfo
+                console.log(e);
+                if(e.form == 0){
+                    console.log(e.form);
+                    this.axios({
+                      method: 'post',
+                      url: '/admin/alipay/transfer',
+                      data:{
+                        "id": e.id,
+                        "userid": e.userid,
+                        "amount": e.amount,
+                        "name": e.name,
+                        "account": e.account,
+                        "form": e.form
+                      }
+                    }).then(function (response) {
+                        this.getTable({
+                            "pageInfo":this.pageInfo
+                        });
+                        this.$Message.info('提现成功');
+                    }.bind(this)).catch(function (error) {
+                      alert(error);
                     });
-                    this.$Message.info('提现成功');
-                }.bind(this)).catch(function (error) {
-                  alert(error);
-                });
+                }
+                
             },
             userInfoSet(e){
                 this.modal = true;
