@@ -5,6 +5,11 @@
                 <p slot="title">推送内容</p>
                 <Row style="margin-bottom: 25px;">
                     <Col>
+                        <Input v-model="title" type="textarea" placeholder="请在这里输入标题！"></Input>
+                    </Col>
+                </Row>
+                <Row style="margin-bottom: 25px;">
+                    <Col>
                         <Input v-model="message" type="textarea" :rows="6" placeholder="请在这里输入推送内容！"></Input>
                     </Col>
                 </Row>
@@ -54,6 +59,7 @@
 	export default {
         data () {
             return {
+                title:null,
             	message:null,
                 /*修改modal的显示参数*/
                 modal:false,
@@ -70,6 +76,10 @@
                 },
             	/*表显示字段*/
             	columns1: [
+                    {
+                        title: '标题',
+                        key: 'title'
+                    },
                     {
                         title: '系统通知',
                         key: 'message'
@@ -113,7 +123,7 @@
             getTable(e) {
                 this.axios({
                   method: 'get',
-                  url: '/notifiction',
+                  url: '/admin/notifiction',
                   params: {
                     'page':e.pageInfo.page,
                     'pageSize':e.pageInfo.pageSize
@@ -147,11 +157,12 @@
             	this.modal = true;
             },
             send(){
-            	if (this.message != null && this.message != "") {
+            	if (this.message != null && this.message != "" && this.title != null && this.title != "") {
             		this.axios({
 	                  method: 'post',
 	                  url: '/admin/notifiction/push',
 	                  params: {
+                        'title': this.title,
 	                    'message': this.message
 	                  }
 	                }).then(function (response) {
@@ -164,6 +175,7 @@
 		                    duration: 0
 		                });
 		                this.message = null;
+                        this.title = null;
 	                }.bind(this)).catch(function (error) {
 	                  alert(error);
 	                });

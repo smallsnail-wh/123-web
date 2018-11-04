@@ -21,10 +21,22 @@
                     <Input v-model="entityNew.advid" style="width: 204px"/>
                 </Form-item>
                 <Form-item label="" prop="imageurl">
-                    <Upload 
+                    <!-- <Upload 
                         ref="upload"
                         action="/weiguang/banner/upload/picture"
                         name="picture"
+                        :show-upload-list="false"
+                        :before-upload="handleBeforeUpload"
+                        :on-success="handleSuccess1"
+                        :on-format-error="handleFormatError"
+                        :format="['jpg','jpeg','png']">
+                        <Button type="ghost" icon="ios-cloud-upload-outline">上传图片</Button>
+                    </Upload> -->
+                    <Upload 
+                        ref="upload"
+                        action="//upload.qiniu.com/"
+                        :data="qiniuToken"
+                        name="file"
                         :show-upload-list="false"
                         :before-upload="handleBeforeUpload"
                         :on-success="handleSuccess1"
@@ -47,8 +59,9 @@
                 <Form-item label="" prop="imageurl">
                     <Upload 
                         ref="upload"
-                        action="/weiguang/banner/upload/picture"
-                        name="picture"
+                        action="//upload.qiniu.com/"
+                        name="file"
+                        :data="qiniuToken"
                         :show-upload-list="false"
                         :before-upload="handleBeforeUpload"
                         :on-success="handleSuccess2"
@@ -68,6 +81,9 @@
 	export default {
         data () {
             return {
+                qiniuToken:{
+                    token:null
+                },
                 imageurl:'',
             	/*选择的数量*/
                 count:null,
@@ -172,6 +188,14 @@
         mounted(){
         	/*页面初始化调用方法*/
             this.getTable();
+            this.axios({
+              method: 'get',
+              url: '/qiniu/uptoken'
+            }).then(function (response) {
+                this.qiniuToken.token = response.data;
+            }.bind(this)).catch(function (error) {
+              alert(error);
+            });
         },
         methods:{
             /*entity实体初始化*/
@@ -353,14 +377,16 @@
                 this.data1.sort();
             },
             handleSuccess1 (res, file) {
-                this.entityNew.imageurl = res.url;
-                file.url = res.url;
-                file.name = res.url;
+                var url = "http://picture.weguang.com.cn/"+res.key;
+                this.entityNew.imageurl = url;
+                file.url = url;
+                file.name = url;
             },
             handleSuccess2 (res, file) {
-                this.entityModify.imageurl = res.url;
-                file.url = res.url;
-                file.name = res.url;
+                var url = "http://picture.weguang.com.cn/"+res.key;
+                this.entityModify.imageurl = url;
+                file.url = url;
+                file.name = url;
             },
             handleBeforeUpload () {
                 this.$refs.upload.fileList.splice(0, this.$refs.upload.fileList.length);
