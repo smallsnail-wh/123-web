@@ -39,7 +39,7 @@
                         </Form-item>
                     </Col>
                 </Row>
-                <Row>
+                <!-- <Row>
                     <Col span="12">
                         <Form-item label="密码:" prop="password">
                             <Input v-model="userNew.password" type="password" style="width: 204px"/>
@@ -50,7 +50,7 @@
                             <Input v-model="userNew.passwordAgain" type="password" style="width: 204px"/>
                         </Form-item>
                     </Col>
-                </Row>
+                </Row> -->
                 <Row>
                     <Col span="12">
                         <Form-item label="用户类型:" prop="customerType">
@@ -115,7 +115,7 @@
                 </Row>
             </Form>
             <div slot="footer">
-                <Button type="error" size="large"  @click="cancel">关闭</Button>
+                <Button type="error" size="large"  @click="cancel()">关闭</Button>
             </div>
         </Modal>
     </div>
@@ -205,12 +205,12 @@
                     customerType: [
                         { type:'string',required: true, message: '输选择用户类型', trigger: 'blur' }
                     ],
-                    password: [
-                        { type:'string',required: true, message: '输入密码', trigger: 'blur' }
-                    ],
-                    passwordAgain: [
-                        { type:'string',required: true, message: '输入再次密码', trigger: 'blur' }
-                    ]
+                    // password: [
+                    //     { type:'string',required: true, message: '输入密码', trigger: 'blur' }
+                    // ],
+                    // passwordAgain: [
+                    //     { type:'string',required: true, message: '输入再次密码', trigger: 'blur' }
+                    // ]
                 },
                 /*修改验证*/
                 ruleModify:{
@@ -410,7 +410,7 @@
             newOk (userNew) { 
                 this.$refs[userNew].validate((valid) => {
                     if (valid) {
-                        if(this.userNew.password == this.userNew.passwordAgain){
+                        // if(this.userNew.password == this.userNew.passwordAgain){
                            /* this.initUser();*/
                             /*this.userSet(this.userNew);*/
                             this.axios({
@@ -418,23 +418,27 @@
                                 url: '/admin/users/user',
                                 data: this.userNew
                             }).then(function (response) {
-                                this.initUserNew();
-                                this.getTable({
-                                    "pageInfo":this.pageInfo,
-                                    "loginName":this.loginName
-                                });
-                                this.$Message.info('新建成功');
+                                if(response.data.statu != null && response.data.statu == '2004'){
+                                    this.$Message.error('手机号已注册账号');
+                                }else{
+                                    this.initUserNew();
+                                    this.getTable({
+                                        "pageInfo":this.pageInfo,
+                                        "loginName":this.loginName
+                                    });
+                                    this.$Message.info('新建成功');
+                                }
                             }.bind(this)).catch(function (error) {
                                 alert(error);
                             });  
                             this.newModal = false;
-                        }else{
-                            this.$Message.error('两次输入的密码不相同！');
-                            this.loading = false;
-                            this.$nextTick(() => {
-                                this.loading = true;
-                            });
-                        }
+                        // }else{
+                        //     this.$Message.error('两次输入的密码不相同！');
+                        //     this.loading = false;
+                        //     this.$nextTick(() => {
+                        //         this.loading = true;
+                        //     });
+                        // }
                     }else {
                         this.$Message.error('表单验证失败!');
                         setTimeout(() => {
@@ -490,6 +494,7 @@
             /*modal的cancel点击事件*/
             cancel () {
                 this.$Message.info('点击了取消');
+                this.modal = false;
             },
             /*table选择后触发事件*/
             change(e){
