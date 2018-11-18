@@ -103,6 +103,32 @@
                 <Button type="error" size="large"  @click="cancel">关闭</Button>
             </div>
         </Modal>
+        <!--修改modal-->  
+        <Modal :mask-closable="false" :visible.sync="modifyModal" :loading = "loading" v-model="modifyModal" width="600" title="修改" @on-ok="modifyOk('infoModify2')" @on-cancel="cancel()">
+             <Form ref="infoModify2" :model="infoModify2" :rules="ruleModify" :label-width="80" >
+                <Row>
+                    <Col span="12">
+                        <Form-item label="广告:" prop="title">
+                            <span>{{infoModify2.title}}</span>
+                        </Form-item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="12">
+                        <Form-item label="红包总数:" prop="total">
+                            <Input v-model="infoModify2.total" style="width: 204px"/>
+                        </Form-item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="12">
+                        <Form-item label="剩余量:" prop="surplus">
+                            <Input v-model="infoModify2.surplus" style="width: 204px"/>
+                        </Form-item>
+                    </Col>
+                </Row>
+            </Form>
+        </Modal>
     </div>
 </template>
 <script>
@@ -119,6 +145,8 @@
                 type:1,
                 time:null,
                 total:0,
+                /*loading*/
+                loading: true,
                 /*pageInfo实体*/
                 pageInfo:{
                     page:0,
@@ -135,9 +163,25 @@
                     title:'',
                     time:'',
                 },
+                infoModify2:{
+                    advid:'',
+                    title:'',
+                    total:'',
+                    surplus:'',
+                },
+                modifyModal:false,
                 infoModify:{
                     id:'',
                     top:''
+                },
+                /*修改验证*/
+                ruleModify:{
+                    total: [
+                        { type:'string',required: true, message: '输入红包总数', trigger: 'blur' }
+                    ],
+                    surplus: [
+                        { type:'string',required: true, message: '输入红包剩余量', trigger: 'blur' }
+                    ]
                 },
                 /*表显示字段*/
                 columns1: [
@@ -232,6 +276,26 @@
                             ]);
                         }
                     },
+                    {
+                        title: '修改',
+                        align: 'center',
+                        key: 'action',
+                        width: 100,
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'success',
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.modifyOpen(params.row);
+                                        }
+                                    }
+                                },'修改')
+                            ]);
+                        }
+                    },
                 ],
                 /*表数据*/
                 data1: [],
@@ -290,6 +354,47 @@
                 }
                 this.info.total = e.total;
                 this.info.surplus = e.surplus;
+            },
+            modifyOpen(e){
+                this.modifyModal = true;
+                this.infoModify2.advid = e.id;
+                this.infoModify2.title = e.title;
+                this.infoModify2.total = e.total+'';
+                this.infoModify2.surplus = e.surplus+'';
+            },
+            modifyOk(infoModify2){
+                this.$refs[infoModify2].validate((valid) => {
+                    if (valid) {
+                        this.axios({
+                          method: 'put',
+                          url: '/admin/adv/redpackage/update',
+                          params: {
+                                "advid": this.infoModify2.advid,
+                                "total": this.infoModify2.total,
+                                "surplus": this.infoModify2.surplus
+                            },
+                        }).then(function (response) {
+                            this.getTable({
+                                "pageInfo":this.pageInfo,
+                                "username":this.username,
+                                "mobile":this.mobile,
+                                "advid":this.advid
+                            });
+                            this.$Message.info('修改成功');
+                        }.bind(this)).catch(function (error) {
+                          alert(error);
+                        });  
+                        this.modifyModal = false;
+                    }else {
+                        this.$Message.error('表单验证失败!');
+                        setTimeout(() => {
+                            this.loading = false;
+                            this.$nextTick(() => {
+                                this.loading = true;
+                            });
+                        }, 1000);
+                    }
+                })
             },
             /*得到表数据*/
             getTable(e) {
